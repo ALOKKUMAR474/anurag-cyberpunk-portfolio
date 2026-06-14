@@ -19,8 +19,6 @@ import {
   tools
 } from "./content/siteContent";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
 function useGridBackground() {
   useEffect(() => {
     const canvas = document.getElementById("bg-canvas");
@@ -105,15 +103,17 @@ export default function App() {
     setFormStatus("Sending...");
 
     try {
-      const response = await fetch(`${API_URL}/contacts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formState)
-      });
+      // Simulate network latency (600ms)
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
-      if (!response.ok) {
-        throw new Error("Failed to submit contact form");
-      }
+      // Save submission to localStorage
+      const submissions = JSON.parse(localStorage.getItem("contact_submissions") || "[]");
+      submissions.push({
+        ...formState,
+        id: Date.now(),
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem("contact_submissions", JSON.stringify(submissions));
 
       setFormState({ name: "", email: "", message: "" });
       setFormStatus("Signal received. I will get back to you soon.");
